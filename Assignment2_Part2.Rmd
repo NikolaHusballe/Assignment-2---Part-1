@@ -17,6 +17,7 @@ Last year you assessed the teachers (darned time runs quick!). Now you want to r
 
 Questions to be answered (but see guidance below):
 1- Write a paragraph discussing how assessment of prediction performance is different in Bayesian vs. frequentist models
+  
 2- Provide at least one plot and one written line discussing prediction errors for each of the teachers.
 
 This is the old data:
@@ -197,26 +198,27 @@ samples_r = sample(p_grid, prob = posterior.R, size = 1e4, replace = TRUE)
 c.r = rbinom(1e4, size = 10, prob = samples_r)
 
 simplehist(c)
+abline(v=9, col = "red")
 
 ```
-
+given the predictive posterior, the new values are unlikely
 predictive posterior for Kristian
 ```{r}
 samples_k = sample(p_grid, prob = posterior.KT, size = 1e4, replace = TRUE)
-c.k = rbinom(1e4, size = 8, prob = samples_k)
+c.k = rbinom(1e4, size = 12, prob = samples_k)
 
 simplehist(c.k)
-
+abline(v=8, col = "red")
 ```
 
 
 predictive posterior Josh
 ```{r}
 samples_j = sample(p_grid, prob = posterior.JS, size = 1e4, replace = TRUE)
-c.j = rbinom(1e4, size = 148, prob = samples_j)
+c.j = rbinom(1e4, size = 172, prob = samples_j)
 
 simplehist(c.j)
-
+abline(v=148, col = "red")
 ```
 
 predictive posterior Mikkel
@@ -225,7 +227,7 @@ samples_m = sample(p_grid, prob = posterior.MW, size = 1e4, replace = TRUE)
 c.m = rbinom(1e4, size = 65, prob = samples_m)
 
 simplehist(c.m) 
-
+abline(v=34, col = "red")
 ```
 
 ```{r}
