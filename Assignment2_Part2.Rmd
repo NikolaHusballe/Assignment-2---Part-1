@@ -1,0 +1,250 @@
+---
+title: "Computational Modeling - Week 5 - Assignment 2 - Part 2"
+author: "Riccardo Fusaroli"
+date: "2/19/2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## In this assignment we learn how to assess rates from a binomial distribution, using the case of assessing your teachers' knowledge of CogSci.
+
+### Second part: Focusing on predictions
+
+Last year you assessed the teachers (darned time runs quick!). Now you want to re-test them and assess whether your models are producing reliable predictions. In Methods 3 we learned how to do machine-learning style assessment of predictions (e.g. rmse on testing datasets). Bayesian stats makes things a bit more complicated. So we'll try out how that works. N.B. You can choose which prior to use for the analysis of last year's data.
+
+Questions to be answered (but see guidance below):
+1- Write a paragraph discussing how assessment of prediction performance is different in Bayesian vs. frequentist models
+2- Provide at least one plot and one written line discussing prediction errors for each of the teachers.
+
+This is the old data:
+- Riccardo: 3 correct answers out of 6 questions
+- Kristian: 2 correct answers out of 2 questions (then he gets bored)
+- Josh: 160 correct answers out of 198 questions (Josh never gets bored)
+- Mikkel: 66 correct answers out of 132 questions
+
+This is the new data:
+- Riccardo: 9 correct answers out of 10 questions (then he freaks out about teaching preparation and leaves)
+- Kristian: 8 correct answers out of 12 questions
+- Josh: 148 correct answers out of 172 questions (again, Josh never gets bored)
+- Mikkel: 34 correct answers out of 65 questions
+
+Guidance Tips
+
+1. There are at least two ways of assessing predictions.
+2. Last year's results are this year's expectations.
+3. Are the parameter estimates changing? (way 1)
+4. How does the new data look in last year's predictive posterior? (way 2)
+
+```{r}
+library(rethinking)
+
+
+#Riccardo
+
+dens=100
+p_grid <- seq( from=0 , to=1 , length.out=dens)
+
+# Define the prior
+prior <- rep( 1 , dens ) # Flat
+
+# prior <- ifelse(p_grid < 0.5 , 0 , 1) 
+#informed# prior <- exp(-5*abs( p_grid - 0.5) # conservative
+
+# Compute the likelihood at each value in grid
+likelihood <- dbinom( 3, size=6 , prob=p_grid )
+
+# Compute the posterior (likelihood by prior)
+unstd.posterior <- likelihood * prior
+
+#Standardize the posterior (so it sums to 1)
+posterior.R <- unstd.posterior / sum(unstd.posterior)
+
+# Draw the plot
+Data=data.frame(grid=p_grid,posterior=posterior.R,prior=prior,likelihood=likelihood)
+ggplot(Data,aes(grid,posterior))+ geom_point()+geom_line()+theme_classic()+geom_line(aes(grid,prior/dens),color='red')+  xlab("probability of correct answer")+ ylab("posterior probability")
+
+prior.R2 = posterior.R
+likelihood.R2 = dbinom(9,10, prob = p_grid)
+unstd.posterior.R2 <- likelihood.R2 * prior.R2
+posterior.R2 <- unstd.posterior.R2 / sum(unstd.posterior.R2)
+
+# Draw the plot
+Data2 =data.frame(grid=p_grid,posterior=posterior.R2,prior=prior.R2,likelihood=likelihood.R2)
+ggplot(Data2,aes(grid,posterior))+ geom_point()+geom_line()+theme_classic()+geom_line(aes(grid,prior),color='red')+  xlab("probability of correct answer")+ ylab("posterior probability")
+
+```
+
+
+```{r}
+
+#Kristian
+
+dens=100
+p_grid <- seq( from=0 , to=1 , length.out=dens)
+
+# Define the prior
+prior <- rep( 1 , dens ) # Flat
+
+# prior <- ifelse(p_grid < 0.5 , 0 , 1) 
+#informed# prior <- exp(-5*abs( p_grid - 0.5) # conservative
+
+# Compute the likelihood at each value in grid
+likelihood.KT <- dbinom( 2, size=2 , prob=p_grid )
+
+# Compute the posterior (likelihood by prior)
+unstd.posterior.KT <- likelihood.KT * prior
+
+#Standardize the posterior (so it sums to 1)
+posterior.KT <- unstd.posterior.KT / sum(unstd.posterior.KT)
+
+# Draw the plot
+Data=data.frame(grid=p_grid,posterior=posterior.KT,prior=prior,likelihood=likelihood.KT)
+ggplot(Data,aes(grid,posterior))+ geom_point()+geom_line()+theme_classic()+geom_line(aes(grid,prior/dens),color='red')+  xlab("probability of correct answer")+ ylab("posterior probability")
+
+prior.KT2 = posterior.KT
+likelihood.KT2 = dbinom(8,12, prob = p_grid)
+unstd.posterior.KT2 <- likelihood.KT2 * prior.KT2
+posterior.KT2 <- unstd.posterior.KT2 / sum(unstd.posterior.KT2)
+
+# Draw the plot
+Data2 =data.frame(grid=p_grid,posterior=posterior.KT2,prior=prior.KT2,likelihood=likelihood.KT2)
+ggplot(Data2,aes(grid,posterior))+ geom_point()+geom_line()+theme_classic()+geom_line(aes(grid,prior),color='red')+  xlab("probability of correct answer")+ ylab("posterior probability")
+
+```
+
+```{r}
+#Josh
+
+dens=100
+p_grid <- seq( from=0 , to=1 , length.out=dens)
+
+# Define the prior
+prior <- rep( 1 , dens ) # Flat
+
+# prior <- ifelse(p_grid < 0.5 , 0 , 1) 
+#informed# prior <- exp(-5*abs( p_grid - 0.5) # conservative
+
+# Compute the likelihood at each value in grid
+likelihood.JS <- dbinom( 160, size=198 , prob=p_grid )
+
+# Compute the posterior (likelihood by prior)
+unstd.posterior.JS <- likelihood.JS * prior
+
+#Standardize the posterior (so it sums to 1)
+posterior.JS <- unstd.posterior.JS / sum(unstd.posterior.JS)
+
+# Draw the plot
+Data=data.frame(grid=p_grid,posterior=posterior.JS,prior=prior,likelihood=likelihood.JS)
+ggplot(Data,aes(grid,posterior))+ geom_point()+geom_line()+theme_classic()+geom_line(aes(grid,prior/dens),color='red')+  xlab("probability of correct answer")+ ylab("posterior probability")
+
+prior.JS2 = posterior.JS
+likelihood.JS2 = dbinom(148,172, prob = p_grid)
+unstd.posterior.JS2 <- likelihood.JS2 * prior.JS2
+posterior.JS2 <- unstd.posterior.JS2 / sum(unstd.posterior.JS2)
+
+# Draw the plot
+Data2 =data.frame(grid=p_grid,posterior=posterior.JS2,prior=prior.JS2,likelihood=likelihood.JS2)
+ggplot(Data2,aes(grid,posterior))+ geom_point()+geom_line()+theme_classic()+geom_line(aes(grid,prior),color='red')+  xlab("probability of correct answer")+ ylab("posterior probability")
+
+
+```
+
+```{r}
+#Mikkel
+
+dens=100
+p_grid <- seq( from=0 , to=1 , length.out=dens)
+
+# Define the prior
+prior <- rep( 1 , dens ) # Flat
+
+# prior <- ifelse(p_grid < 0.5 , 0 , 1) 
+#informed# prior <- exp(-5*abs( p_grid - 0.5) # conservative
+
+# Compute the likelihood at each value in grid
+likelihood.MW <- dbinom( 66, size=132 , prob=p_grid )
+
+# Compute the posterior (likelihood by prior)
+unstd.posterior.MW <- likelihood.MW * prior
+
+#Standardize the posterior (so it sums to 1)
+posterior.MW <- unstd.posterior.MW / sum(unstd.posterior.MW)
+
+# Draw the plot
+Data=data.frame(grid=p_grid,posterior=posterior.MW,prior=prior,likelihood=likelihood.MW)
+ggplot(Data,aes(grid,posterior))+ geom_point()+geom_line()+theme_classic()+geom_line(aes(grid,prior/dens),color='red')+  xlab("probability of correct answer")+ ylab("posterior probability")
+
+prior.MW2 = posterior.MW
+likelihood.MW2 = dbinom(34,65, prob = p_grid)
+unstd.posterior.MW2 <- likelihood.MW2 * prior.MW2
+posterior.MW2 <- unstd.posterior.MW2 / sum(unstd.posterior.MW2)
+
+# Draw the plot
+Data2 =data.frame(grid=p_grid,posterior=posterior.MW2,prior=prior.MW2,likelihood=likelihood.MW2)
+ggplot(Data2,aes(grid,posterior))+ geom_point()+geom_line()+theme_classic()+geom_line(aes(grid,prior),color='red')+  xlab("probability of correct answer")+ ylab("posterior probability")
+
+```
+
+predictive posterior for Riccardo
+
+  sampling all possible p's 
+```{r}
+
+samples_r = sample(p_grid, prob = posterior.R, size = 1e4, replace = TRUE)
+c.r = rbinom(1e4, size = 10, prob = samples_r)
+
+simplehist(c)
+
+```
+
+predictive posterior for Kristian
+```{r}
+samples_k = sample(p_grid, prob = posterior.KT, size = 1e4, replace = TRUE)
+c.k = rbinom(1e4, size = 8, prob = samples_k)
+
+simplehist(c.k)
+
+```
+
+
+predictive posterior Josh
+```{r}
+samples_j = sample(p_grid, prob = posterior.JS, size = 1e4, replace = TRUE)
+c.j = rbinom(1e4, size = 148, prob = samples_j)
+
+simplehist(c.j)
+
+```
+
+predictive posterior Mikkel
+```{r}
+samples_m = sample(p_grid, prob = posterior.MW, size = 1e4, replace = TRUE)
+c.m = rbinom(1e4, size = 65, prob = samples_m)
+
+simplehist(c.m) 
+
+```
+
+```{r}
+ 
+
+```
+
+
+
+
+### Depending on time: Questions from the handbook
+2H1. Suppose there are two species of panda bear. Both are equally common in the wild and live in the same places. They look exactly alike and eat the same food, and there is yet no genetic assay capable of telling them apart. They differ however in their family sizes. Species A gives birth to twins 10% of the time, otherwise birthing a single infant. Species B births twins 20% of the time, otherwise birthing singleton infants. Assume these numbers are known with certainty, from many years of field research.
+Now suppose you are managing a captive panda breeding program. You have a new female panda of unknown species, and she has just given birth to twins. What is the probability that her next birth will also be twins?
+
+2H2. Recall all the facts from the problem above. Now compute the probability that the panda we have is from species A, assuming we have observed only the first birth and that it was twins.
+
+2H3. Continuing on from the previous problem, suppose the same panda mother has a second birth and that it is not twins, but a singleton infant. Compute the posterior probability that this panda is species A.
+
+2H4. A common boast of Bayesian statisticians is that Bayesian inference makes it easy to use all of the data, even if the data are of different types. So suppose now that a veterinarian comes along who has a new genetic test that she claims can identify the species of our mother panda. But the test, like all tests, is imperfect. This is the information you have about the test:
+- The probability it correctly identifies a species A panda is 0.8.
+- The probability it correctly identifies a species B panda is 0.65.
+The vet administers the test to your panda and tells you that the test is positive for species A. First ignore your previous information from the births and compute the posterior probability that your panda is species A. Then redo your calculation, now using the birth data as well.
